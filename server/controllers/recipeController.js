@@ -32,7 +32,35 @@ module.exports = {
         } catch (error) {
             res.status(500).send({message: error.message || "Error Occured"});
         }
-    }
+    },
+
+    getCategories: async (req, res) => {
+        try {
+            const categories = await Category.find({});
+            if (!categories) {
+                throw new Error("There is no recipeId");
+            } else {
+                res.json(categories);
+            }
+        } catch (error) {
+            res.status(500).send({message: error.message || "Error Occured"});
+        }
+    },
+
+    getRecipesByCategories: async (req, res) => {
+        try {
+            const selectedCategory = req.params.category
+            console.log(selectedCategory)
+            const categories = await Recipe.find({"category": selectedCategory});
+            if (!categories) {
+                throw new Error("There is no recipeId");
+            } else {
+                res.json(categories);
+            }
+        } catch (error) {
+            res.status(500).send({message: error.message || "Error Occured"});
+        }
+    },
 };
 
 // async function insertDymmyCategoryData(){
