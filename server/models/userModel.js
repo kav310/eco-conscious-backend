@@ -15,10 +15,6 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: [true, "Please add the user password"],
         },
-        bloodGroup: {
-            type: String,
-            required: [true, "Please add the user password"],
-        },
     },
     {
         timestamps: true,

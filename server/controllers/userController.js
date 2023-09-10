@@ -22,7 +22,6 @@ module.exports = {
                 username,
                 email,
                 password: hashedPassword,
-                bloodGroup,
             });
 
             await newUser.save();
