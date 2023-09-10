@@ -26,7 +26,8 @@ const recipeSchema = new mongoose.Schema({
         enum: ['Thai', 'American', 'Chinese', 'Mexican', 'Indian', 'Greek', 'French'],
         required: 'This field is required.'
     },
-},{ versionKey: false });
+    userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
+}, {versionKey: false});
 
 
 module.exports = mongoose.model('Recipe', recipeSchema);

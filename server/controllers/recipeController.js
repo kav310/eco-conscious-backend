@@ -21,6 +21,74 @@ module.exports = {
         }
     },
 
+    addRecipes: async (req, res) => {
+        try {
+            const {name, description, ingredients, cookingInstructions, image, category} = req.body;
+            const userId = req.user.id; // Get the user ID from the authenticated user
+
+            const newRecipe = new Recipe({
+                name,
+                description,
+                ingredients,
+                cookingInstructions,
+                image,
+                category,
+                user: userId, // Associate the recipe with the user
+            });
+
+            const savedRecipe = await newRecipe.save();
+            res.status(201).json(savedRecipe);
+        } catch (error) {
+            res.status(500).json({error: 'An error occurred while adding the recipe.'});
+        }
+    },
+
+    editRecipes: async (req, res) => {
+        try {
+            const {name, description, ingredients, cookingInstructions, image, category} = req.body;
+            const recipeId = req.params.id;
+            const userId = req.user.id; // Get the user ID from the authenticated user
+
+            const updatedRecipe = await Recipe.findOneAndUpdate(
+                {_id: recipeId, user: userId}, // Only update if the recipe belongs to the authenticated user
+                {
+                    name,
+                    description,
+                    ingredients,
+                    cookingInstructions,
+                    image,
+                    category,
+                },
+                {new: true}
+            );
+
+            if (!updatedRecipe) {
+                return res.status(404).json({error: 'Recipe not found or unauthorized'});
+            }
+
+            res.status(200).json(updatedRecipe);
+        } catch (error) {
+            res.status(500).json({error: 'An error occurred while editing the recipe.'});
+        }
+    },
+
+    deleteRecipes: async (req, res) => {
+        try {
+            const recipeId = req.params.id;
+            const userId = req.user.id; // Get the user ID from the authenticated user
+
+            const deletedRecipe = await Recipe.findOneAndRemove({_id: recipeId, user: userId});
+
+            if (!deletedRecipe) {
+                return res.status(404).json({error: 'Recipe not found or unauthorized'});
+            }
+
+            res.status(200).json({message: 'Recipe deleted successfully'});
+        } catch (error) {
+            res.status(500).json({error: 'An error occurred while deleting the recipe.'});
+        }
+    },
+
     getRecipeById: async (req, res) => {
         try {
             let recipeId = req.params.id;
@@ -63,6 +131,7 @@ module.exports = {
         }
     },
 
+
     getAllIngredients: async (req, res) => {
         try {
             const ingredients = await VeganIngredients.find({});
@@ -85,7 +154,7 @@ module.exports = {
                 {
                     $group: {
                         _id: '$category',
-                        ingredients: { $push: '$name' },
+                        ingredients: {$push: '$name'},
                     },
                 },
             ]);
@@ -93,7 +162,7 @@ module.exports = {
             res.json(data);
         } catch (error) {
             console.error('Error:', error);
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({error: 'Internal Server Error'});
         }
     }
 };
