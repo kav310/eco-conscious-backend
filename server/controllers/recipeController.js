@@ -1,7 +1,7 @@
 require('../models/database');
 const Category = require('../models/Category');
 const Recipe = require('../models/Recipe');
-const VeganIngredients = require('../models/Ingredients')
+const VeganIngredients = require('../models/Ingredients');
 const {v4: uuidv4} = require("uuid");
 
 
@@ -22,9 +22,10 @@ module.exports = {
     },
 
     addRecipes: async (req, res) => {
+        console.log(req.body, req.user)
         try {
             const {name, description, ingredients, cookingInstructions, image, category} = req.body;
-            const userId = req.user.id; // Get the user ID from the authenticated user
+            const userId = req.user; // Get the user ID from the authenticated user
 
             const newRecipe = new Recipe({
                 name,
@@ -33,12 +34,13 @@ module.exports = {
                 cookingInstructions,
                 image,
                 category,
-                user: userId, // Associate the recipe with the user
+                userId: userId, // Associate the recipe with the user
             });
 
             const savedRecipe = await newRecipe.save();
             res.status(201).json(savedRecipe);
         } catch (error) {
+            console.error('Error adding recipe:', error);
             res.status(500).json({error: 'An error occurred while adding the recipe.'});
         }
     },
